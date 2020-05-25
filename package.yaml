@@ -1,0 +1,67 @@
+# This YAML file describes your package. Stack will automatically generate a
+# Cabal file when you run `stack build`. See the hpack website for help with
+# this file: <https://github.com/sol/hpack>.
+name: primordial-particle-system
+version: '0.0.0'
+github: "FayeAlephNil/primordial-particle-system"
+license: MIT
+author: "Faye Jackson"
+maintainer: "Faye Jackson"
+synopsis: The Primordial Particle System
+# description: primordial-particle-system is a new Haskeleton package.
+category: physics
+
+extra-source-files:
+- CHANGELOG.md
+- LICENSE.md
+- package.yaml
+- README.md
+- stack.yaml
+
+ghc-options: -Wall
+
+library:
+  dependencies:
+  - base
+  - vector
+  - gloss
+  source-dirs: library
+
+executables:
+  primordial-particle-system:
+    source-dirs: executable
+    main: Main.hs
+    dependencies:
+    - base
+    - primordial-particle-system
+    ghc-options:
+    - -rtsopts
+    - -threaded
+    - -with-rtsopts=-N
+
+benchmarks:
+  primordial-particle-system-benchmarks:
+    source-dirs: benchmark
+    main: Main.hs
+    dependencies:
+    - base
+    - primordial-particle-system
+    - criterion
+    ghc-options:
+    - -rtsopts
+    - -threaded
+    - -with-rtsopts=-N
+
+tests:
+  primordial-particle-system-test-suite:
+    source-dirs: test-suite
+    main: Main.hs
+    dependencies:
+    - base
+    - primordial-particle-system
+    - tasty
+    - tasty-hspec
+    ghc-options:
+    - -rtsopts
+    - -threaded
+    - -with-rtsopts=-N
