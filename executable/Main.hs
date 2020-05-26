@@ -23,12 +23,18 @@ ourConf :: (MonadRandom m) => m Config
 ourConf = flip fmap ourPPS $ \pps -> Config {
     initpps = pps,
     alph = pi,
-    beta = 3 * pi,
-    radius2 = 4 * (60 ** 2),
+    beta = 69 * 180 / pi, -- Cassie's contribution, the 69'otron
+    radius2 = (60 ** 2),
     howManyVersions=50,
     confWindow = Gloss.InWindow "Nice Window" (maxX, maxY) (0, 0),
     backgroundColor = Gloss.black,
-    particleColor = const $ const Gloss.red
+    particleColor = \n -> const $ case n of
+        0 -> Gloss.red
+        1 -> Gloss.blue
+        2 -> Gloss.green
+        3 -> Gloss.yellow
+        4 -> Gloss.cyan
+        _ -> Gloss.magenta
   }
 
 main :: IO ()

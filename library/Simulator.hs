@@ -2,7 +2,6 @@ module Simulator (simulatePPS) where
 
 import qualified Graphics.Gloss as Gloss
 import qualified Data.Vector as Vec
-import Data.Maybe
 import Defs
 import MathHelp
 
@@ -33,8 +32,9 @@ versionsParticle n original = original {past = newPast}
     newPast = pos original : if (length ourPast < n) then ourPast else (safeInit ourPast)
 
 phiParticle :: Config -> Float -> PPS -> Particle -> Particle
-phiParticle conf dt pps original = changeVel changeIt original
+phiParticle conf dt pps original = (changeVel changeIt original) { color = newColor }
   where
+    newColor = (particleColor conf) n original
     ourAlpha = (alph conf)
     ourBeta = (beta conf)
     (n, leftN, rightN) = getNeighbors conf pps original
@@ -44,7 +44,7 @@ getNeighbors :: Config -> PPS -> Particle -> (Int, Int, Int)
 getNeighbors conf pps original = (n, leftN, rightN)
   where
     r2 = (radius2 conf)
-    n = length filteredPPS
+    n = length filteredPPS - 1
     leftN = length leftPPS
     rightN = n - leftN
     leftPPS = filter (leftOf (pos original) (vel original)) filteredPPS
