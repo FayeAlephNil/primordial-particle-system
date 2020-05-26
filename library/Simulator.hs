@@ -6,18 +6,13 @@ import Data.Maybe
 import Defs
 import MathHelp
 
-displayPartAlpha :: Float -> Particle -> Gloss.Picture
-displayPartAlpha alpha p = ourboi
-  where
-    ourColor = Gloss.withAlpha alpha (color p)
-    ourboi = Gloss.color ourColor $ uncurry Gloss.translate (pos p) $ Gloss.circleSolid (size p)
-
 displayParticle :: Particle -> Gloss.Picture
-displayParticle = Gloss.pictures . go 1 . Just
+displayParticle p = doOne 1 (pos p) <> (Gloss.color Gloss.white $ Gloss.line (past p))
   where
-    go :: Float -> Maybe Particle -> [Gloss.Picture]
-    go _ Nothing = []
-    go alpha (Just original) = displayPartAlpha alpha original : go (alpha * 1/2) (past original)
+    -- n = 1 + length (past p)
+    ourColor = color p
+    doOne :: Float -> Position -> Gloss.Picture
+    doOne alpha position = Gloss.color (Gloss.withAlpha alpha ourColor) $ uncurry Gloss.translate position $ Gloss.circleSolid (size p)
 
 displayPPS :: PPS -> Gloss.Picture
 displayPPS = Gloss.pictures . Vec.toList . fmap displayParticle
@@ -28,7 +23,14 @@ moveParticle dt original = changePos (posUpdate (polarToCart $ vel original)) or
     posUpdate (dvx, dvy) (x, y) = (x + dvx * dt, y + dvy * dt)
 
 versionsParticle :: Int -> Particle -> Particle
-versionsParticle n = fromJust . listToParticle . take n . particleToList . Just
+versionsParticle n original = original {past = newPast}
+  where
+    safeInit :: [a] -> [a]
+    safeInit [] = []
+    safeInit as = init as
+
+    ourPast = past original
+    newPast = pos original : if (length ourPast < n) then ourPast else (safeInit ourPast)
 
 phiParticle :: Config -> Float -> PPS -> Particle -> Particle
 phiParticle conf dt pps original = changeVel changeIt original
@@ -46,7 +48,7 @@ getNeighbors conf pps original = (n, leftN, rightN)
     leftN = length leftPPS
     rightN = n - leftN
     leftPPS = filter (leftOf (pos original) (vel original)) filteredPPS
-    filteredPPS = filter (nearTo (pos original)) (Vec.toList $ fmap pos pps)
+    filteredPPS = filter (nearTo (pos original)) (Vec.toList $ fmap pos $ Vec.filter (/= original) pps)
     nearTo pos1 pos2 = (distance2 pos1 pos2) < r2
     leftOf (x1, y1) (_, vphi) (x2, y2) = let
       theta = atan2 (y2 - y1) (x2 - x1)
@@ -54,12 +56,12 @@ getNeighbors conf pps original = (n, leftN, rightN)
       in (0 < change) && (change < pi)
 
 updateParticle :: Config -> PPS -> Float -> Particle -> Particle
-updateParticle conf pps dt = versionsParticle (howManyVersions conf) . moveParticle dt . phiParticle conf dt pps
+updateParticle conf pps dt =  moveParticle dt . phiParticle conf dt pps . versionsParticle (howManyVersions conf)
 
 updatePPS :: Config -> Float -> PPS -> PPS
 updatePPS conf dt pps = fmap (updateParticle conf pps dt) pps
 
 simulatePPS :: Config -> IO ()
-simulatePPS conf = Gloss.simulate (confWindow conf) (backgroundColor conf) 10 (initpps conf) displayPPS (const $ updatePPS conf)
+simulatePPS conf = Gloss.simulate (confWindow conf) (backgroundColor conf) 20 (initpps conf) displayPPS (const $ updatePPS conf)
 
 

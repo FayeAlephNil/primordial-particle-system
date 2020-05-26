@@ -6,12 +6,6 @@ import qualified Data.Vector as Vec
 type Velocity = Gloss.Vector
 type Position = Gloss.Point
 
-data GenConfig = GenConfig
-  {
-    speed :: Float,
-    initcolor :: Gloss.Color
-  }
-
 data Config = Config
   {
     initpps :: PPS,
@@ -30,8 +24,9 @@ data Particle = Particle
     color :: Gloss.Color,
     pos :: Position,
     vel :: Velocity,
-    past :: Maybe Particle
+    past :: [Position]
   }
+  deriving (Eq, Show)
 
 type PPS = Vec.Vector Particle
 
@@ -40,17 +35,9 @@ changePos f p = p { pos = f (pos p) }
 
 changeVel :: (Velocity -> Velocity) -> Particle -> Particle
 changeVel f p = p { vel = f (vel p) }
-                     
-setPast :: Maybe Particle -> Particle -> Particle
+
+setPast :: [Position] -> Particle -> Particle
 setPast newPast p = p { past = newPast }
 
 setColor :: Gloss.Color -> Particle -> Particle
 setColor newCol p = p { color = newCol }
-
-particleToList :: Maybe Particle -> [Particle]
-particleToList Nothing = []
-particleToList (Just p) = p : (particleToList (past p))
-
-listToParticle :: [Particle] -> Maybe Particle
-listToParticle [] = Nothing
-listToParticle (p : ps) = Just $ setPast (listToParticle ps) p

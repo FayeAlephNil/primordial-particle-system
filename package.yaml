@@ -25,6 +25,8 @@ library:
   - base
   - vector
   - gloss
+  - random
+  - MonadRandom
   source-dirs: library
 
 executables:
@@ -33,11 +35,15 @@ executables:
     main: Main.hs
     dependencies:
     - base
+    - gloss
     - primordial-particle-system
+    - random
+    - MonadRandom
     ghc-options:
     - -rtsopts
     - -threaded
     - -with-rtsopts=-N
+    - -O2
 
 benchmarks:
   primordial-particle-system-benchmarks:
