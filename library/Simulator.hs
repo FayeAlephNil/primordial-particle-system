@@ -29,7 +29,7 @@ versionsParticle n original = original {past = newPast}
     safeInit as = init as
 
     ourPast = past original
-    newPast = pos original : if (length ourPast < n) then ourPast else (safeInit ourPast)
+    newPast = pos original : if length ourPast < n then ourPast else (safeInit ourPast)
 
 phiParticle :: Config -> Float -> PPS -> Particle -> Particle
 phiParticle conf dt pps original = (changeVel changeIt original) { color = newColor }

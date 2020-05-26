@@ -1,3 +1,5 @@
+{-# LANGUAGE TypeApplications #-}
+
 -- It is generally a good idea to keep all your business logic in your library
 -- and only use it in the executable. Doing so allows others to use what you
 -- wrote in their libraries.
@@ -8,16 +10,24 @@ import Defs
 import Control.Monad.Random.Lazy
 import qualified Graphics.Gloss as Gloss
 
+-- Input the size of your display here if you're displaying fullscreen, this will later be improved to work right 
+
 maxX :: Int
-maxX = 1920
+maxX = floor (1920/2 :: Float)
 
 maxY :: Int
-maxY = 1080
+maxY = floor (1080/2 :: Float)
+
+minX :: Int
+minX = -maxX
+
+minY :: Int
+minY = -maxY
 
 ourPPS :: (MonadRandom m) => m PPS
 ourPPS = genThetas 0 (2 * pi) $ gridAt 10 30 Gloss.red theGrid
   where
-    theGrid = [(x, y) | x <- [0,60..maxX], y <- [0,60..maxY]]
+    theGrid = [(x, y) | x <- [minX,minX+60..maxX], y <- [minY,minY+60..maxY]]
 
 ourConf :: (MonadRandom m) => m Config
 ourConf = flip fmap ourPPS $ \pps -> Config {
