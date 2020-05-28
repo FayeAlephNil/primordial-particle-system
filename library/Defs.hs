@@ -15,7 +15,8 @@ data Config = Config
     howManyVersions :: Int,
     confWindow :: Gloss.Display,
     backgroundColor :: Gloss.Color,
-    particleColor :: Int -> Particle -> Gloss.Color
+    particleColor :: Int -> Particle -> Gloss.Color,
+    speedUp :: Float
   }
 
 data Particle = Particle

@@ -59,9 +59,7 @@ updateParticle :: Config -> PPS -> Float -> Particle -> Particle
 updateParticle conf pps dt =  moveParticle dt . phiParticle conf dt pps . versionsParticle (howManyVersions conf)
 
 updatePPS :: Config -> Float -> PPS -> PPS
-updatePPS conf dt pps = fmap (updateParticle conf pps dt) pps
+updatePPS conf dt pps = fmap (updateParticle conf pps (speedUp conf * dt)) pps
 
 simulatePPS :: Config -> IO ()
 simulatePPS conf = Gloss.simulate (confWindow conf) (backgroundColor conf) 20 (initpps conf) displayPPS (const $ updatePPS conf)
-
-

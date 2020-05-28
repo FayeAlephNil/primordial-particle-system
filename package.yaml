@@ -39,6 +39,7 @@ executables:
     - primordial-particle-system
     - random
     - MonadRandom
+    - optparse-applicative
     ghc-options:
     - -rtsopts
     - -threaded
